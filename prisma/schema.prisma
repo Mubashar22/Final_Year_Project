@@ -1,0 +1,135 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  phoneNumber   String
+  role          Role      @default(TENANT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  properties    Property[] @relation("OwnerProperties")
+  favorites     Favorite[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  rentals       Rental[]  @relation("TenantRentals")
+  payments      Payment[]
+}
+
+model Property {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  type        PropertyType
+  area        Float
+  amount      Float
+  location    String
+  isAvailable Boolean   @default(true)
+  ownerId     String
+  owner       User      @relation("OwnerProperties", fields: [ownerId], references: [id])
+  images      Image[]
+  favorites   Favorite[]
+  messages    Message[]
+  rentals     Rental[]
+  payments    Payment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Image {
+  id          String   @id @default(cuid())
+  url         String
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Favorite {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id])
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Rental {
+  id          String   @id @default(cuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id])
+  tenantId    String
+  tenant      User     @relation("TenantRentals", fields: [tenantId], references: [id])
+  startDate   DateTime
+  endDate     DateTime?
+  status      RentalStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  amount        Float
+  paymentMethod String
+  status        String   @default("PENDING")
+  transactionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  property      Property @relation(fields: [propertyId], references: [id])
+  propertyId    String
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  message     String
+  type        String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  TENANT
+  OWNER
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  FLAT
+  PLOT
+  COMMERCIAL
+}
+
+enum RentalStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+} 
