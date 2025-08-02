@@ -26,7 +26,7 @@ interface Property {
 
 export default function PropertyDetails({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: status } = useSession();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

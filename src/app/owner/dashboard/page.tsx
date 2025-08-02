@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { FaBuilding, FaHome, FaUsers, FaDollarSign, FaPlus, FaEnvelope, FaCog, FaSignOutAlt, FaChartLine, FaKey } from 'react-icons/fa';
 
 interface PropertyStats {
   totalProperties: number;
@@ -53,145 +54,218 @@ export default function OwnerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded-lg w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white p-6 rounded-xl shadow-md">
-                  <div className="h-4 bg-gray-200 rounded-lg w-1/2 mb-4"></div>
-                  <div className="h-8 bg-gray-200 rounded-lg w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
-              Owner Dashboard
-            </h1>
-            <p className="mt-2 text-gray-600">Welcome back! Here's an overview of your properties.</p>
-          </div>
-          <Link
-            href="/owner"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
-          >
-            Manage Properties
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+        }}
+      />
+      
+      {/* Floating Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-purple-400/10 rounded-full opacity-40 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-blue-400/10 rounded-full opacity-40 animate-pulse delay-1000" />
+        <div className="absolute top-1/3 right-20 w-16 h-16 bg-indigo-400/10 rounded-full opacity-40 animate-pulse delay-500" />
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Header */}
+      <div className="relative z-10 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaBuilding className="text-white text-xl" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Owner Dashboard
+                </h1>
+                <p className="text-gray-600 text-sm">Welcome back, {session?.user?.name}!</p>
+              </div>
+            </div>
+            <button
+              onClick={() => signOut()}
+              className="flex items-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+            >
+              <FaSignOutAlt className="text-sm" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Properties Card */}
-          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            <h3 className="text-sm font-medium text-gray-500">Total Properties</h3>
-            <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalProperties}</p>
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <FaBuilding className="text-blue-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Total Properties</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.totalProperties}</p>
+              </div>
+            </div>
             <div className="mt-4 flex items-center text-sm text-gray-500">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <FaChartLine className="w-4 h-4 mr-2" />
               All properties
             </div>
           </div>
 
           {/* Available Properties Card */}
-          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            <h3 className="text-sm font-medium text-gray-500">Available Properties</h3>
-            <p className="mt-2 text-3xl font-bold text-green-600">{stats.availableProperties}</p>
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <FaHome className="text-green-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Available Properties</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.availableProperties}</p>
+              </div>
+            </div>
             <div className="mt-4 flex items-center text-sm text-gray-500">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <FaKey className="w-4 h-4 mr-2" />
               Ready to rent
             </div>
           </div>
 
           {/* Rented Properties Card */}
-          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            <h3 className="text-sm font-medium text-gray-500">Rented Properties</h3>
-            <p className="mt-2 text-3xl font-bold text-blue-600">{stats.rentedProperties}</p>
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <FaUsers className="text-orange-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Rented Properties</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.rentedProperties}</p>
+              </div>
+            </div>
             <div className="mt-4 flex items-center text-sm text-gray-500">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <FaUsers className="w-4 h-4 mr-2" />
               Currently rented
             </div>
           </div>
 
           {/* Total Revenue Card */}
-          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
-              Rs. {stats.totalRevenue.toLocaleString()}
-            </p>
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <FaDollarSign className="text-purple-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  Rs. {stats.totalRevenue.toLocaleString()}
+                </p>
+              </div>
+            </div>
             <div className="mt-4 flex items-center text-sm text-gray-500">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <FaDollarSign className="w-4 h-4 mr-2" />
               Total earnings
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
             <Link
               href="/owner"
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm font-medium"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Manage Properties</h3>
-                <svg className="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
+              <FaPlus className="mr-2" />
+              Add Property
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link
+              href="/owner"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
+            >
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4 group-hover:bg-blue-200 transition-colors duration-300">
+                <FaBuilding className="w-6 h-6 text-blue-600" />
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Add, edit, or remove your properties
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Properties</h3>
+              <p className="text-gray-600 text-sm">Add, edit, or remove your properties</p>
             </Link>
 
             <Link
               href="/messages"
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Messages</h3>
-                <svg className="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
+              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4 group-hover:bg-green-200 transition-colors duration-300">
+                <FaEnvelope className="w-6 h-6 text-green-600" />
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                View and respond to tenant inquiries
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Messages</h3>
+              <p className="text-gray-600 text-sm">View and respond to tenant inquiries</p>
             </Link>
 
             <Link
               href="/owner/settings"
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Settings</h3>
-                <svg className="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
+              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4 group-hover:bg-purple-200 transition-colors duration-300">
+                <FaCog className="w-6 h-6 text-purple-600" />
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Manage your account settings
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Settings</h3>
+              <p className="text-gray-600 text-sm">Manage your account settings</p>
             </Link>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mt-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+          <div className="space-y-4">
+            <div className="flex items-center p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <FaBuilding className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">Property management system updated</p>
+                <p className="text-xs text-gray-500">2 hours ago</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <FaEnvelope className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">New tenant inquiry received</p>
+                <p className="text-xs text-gray-500">1 day ago</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <FaDollarSign className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">Monthly rent payment received</p>
+                <p className="text-xs text-gray-500">3 days ago</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

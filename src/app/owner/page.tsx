@@ -462,7 +462,7 @@ export default function OwnerPage() {
                       {existingImages.map((image) => (
                         <div key={image.id} className="relative group aspect-square">
                           <Image
-                            src={image.url}
+                            src={image.url} 
                             alt="Property"
                             fill
                             className="object-cover rounded-lg transition duration-300 group-hover:opacity-75"
@@ -508,7 +508,7 @@ export default function OwnerPage() {
                   <button
                     type="submit"
                     disabled={uploading}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
+                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-md cursor-pointer"
                   >
                     {uploading ? (
                       <span className="flex items-center">

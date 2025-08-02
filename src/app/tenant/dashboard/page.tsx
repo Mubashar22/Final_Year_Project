@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FaHome, FaHeart, FaSearch, FaEnvelope, FaCog, FaSignOutAlt, FaMapMarkerAlt, FaDollarSign, FaTimes } from 'react-icons/fa';
 
 interface RentedProperty {
   id: string;
@@ -111,207 +112,267 @@ export default function TenantDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded-lg w-1/4"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-white p-6 rounded-xl shadow-sm">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
-              Welcome Back
-            </h1>
-            <p className="mt-2 text-gray-600">Manage your rentals and favorites</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80')`
+        }}
+      />
+      
+      {/* Floating Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-400/10 rounded-full opacity-40 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-purple-400/10 rounded-full opacity-40 animate-pulse delay-1000" />
+        <div className="absolute top-1/3 right-20 w-16 h-16 bg-teal-400/10 rounded-full opacity-40 animate-pulse delay-500" />
+      </div>
+
+      {/* Header */}
+      <div className="relative z-10 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaHome className="text-white text-xl" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Tenant Dashboard
+                </h1>
+                <p className="text-gray-600 text-sm">Welcome back, {session?.user?.name}!</p>
+              </div>
+            </div>
+            <button
+              onClick={() => signOut()}
+              className="flex items-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+            >
+              <FaSignOutAlt className="text-sm" />
+              <span>Sign Out</span>
+            </button>
           </div>
-          <Link
-            href="/tenant/properties"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
-          >
-            Browse Properties
-          </Link>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <FaHome className="text-blue-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Rented Properties</p>
+                <p className="text-2xl font-bold text-gray-900">{rentedProperties.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <FaHeart className="text-red-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Favorite Properties</p>
+                <p className="text-2xl font-bold text-gray-900">{favoriteProperties.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <FaDollarSign className="text-green-600 text-xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-600">Total Rent</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  Rs. {rentedProperties.reduce((sum, property) => sum + property.amount, 0).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Rented Properties Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Your Rented Properties</h2>
-          {rentedProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rentedProperties.map((property) => (
-                <div key={property.id} className="bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                  {property.images[0] && (
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={property.images[0].url}
-                        alt={property.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{property.title}</h3>
-                    <p className="text-gray-600 mb-4">{property.location}</p>
-                    <p className="text-2xl font-bold text-blue-600 mb-4">
-                      Rs. {property.amount.toLocaleString()}/month
-                    </p>
-                    <div className="flex justify-between items-center">
-                    <Link
-                      href={`/tenant/properties/${property.id}`}
-                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 cursor-pointer"
-                    >
-                      View Details
-                      <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                      <button
-                        onClick={() => handleUnrentProperty(property.id)}
-                        className="text-red-600 hover:text-red-700 font-medium transition-colors duration-200 cursor-pointer hover:underline"
-                      >
-                        Unrent Property
-                      </button>
-                    </div>
-                  </div>
+        <div className="mb-8">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <div className="p-6 border-b border-gray-200/50">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                <FaHome className="mr-3 text-blue-600" />
+                My Rented Properties
+              </h2>
+            </div>
+            <div className="p-6">
+              {rentedProperties.length === 0 ? (
+                <div className="text-center py-12">
+                  <FaHome className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 text-lg">No rented properties yet</p>
+                  <Link
+                    href="/tenant/properties"
+                    className="mt-4 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    <FaSearch className="mr-2" />
+                    Browse Properties
+                  </Link>
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {rentedProperties.map((property) => (
+                    <div key={property.id} className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30">
+                      {property.images.length > 0 && (
+                        <div className="relative h-48">
+                          <Image
+                            src={property.images[0].url}
+                            alt={property.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-900 mb-2">{property.title}</h3>
+                        <p className="text-gray-600 text-sm mb-2 flex items-center">
+                          <FaMapMarkerAlt className="mr-1 text-gray-400" />
+                          {property.location}
+                        </p>
+                        <p className="text-blue-600 font-bold text-lg mb-4">
+                          Rs. {property.amount.toLocaleString()}/month
+                        </p>
+                        <button
+                          onClick={() => handleUnrentProperty(property.id)}
+                          className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                        >
+                          Unrent Property
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-              <p className="text-gray-600 mb-4">You haven't rented any properties yet.</p>
-              <Link
-                href="/tenant/properties"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
-              >
-                Browse Properties
-              </Link>
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Favorite Properties Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Favorite Properties</h2>
-          {favoriteProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteProperties.map((property) => (
-                <div key={property.id} className="bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                  {property.images[0] && (
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={property.images[0].url}
-                        alt={property.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{property.title}</h3>
-                    <p className="text-gray-600 mb-4">{property.location}</p>
-                    <p className="text-2xl font-bold text-blue-600 mb-4">
-                      Rs. {property.amount.toLocaleString()}/month
-                    </p>
-                    <div className="flex justify-between items-center">
-                    <Link
-                      href={`/tenant/properties/${property.id}`}
-                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 cursor-pointer"
-                    >
-                      View Details
-                      <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                      <button
-                        onClick={() => handleUnfavoriteProperty(property.id)}
-                        className="text-red-600 hover:text-red-700 font-medium transition-colors duration-200 cursor-pointer hover:underline"
-                      >
-                        Remove from Favorites
-                      </button>
-                    </div>
-                  </div>
+        <div className="mb-8">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <div className="p-6 border-b border-gray-200/50">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                <FaHeart className="mr-3 text-red-600" />
+                Favorite Properties
+              </h2>
+            </div>
+            <div className="p-6">
+              {favoriteProperties.length === 0 ? (
+                <div className="text-center py-12">
+                  <FaHeart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 text-lg">No favorite properties yet</p>
+                  <Link
+                    href="/tenant/properties"
+                    className="mt-4 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    <FaSearch className="mr-2" />
+                    Browse Properties
+                  </Link>
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {favoriteProperties.map((property) => (
+                    <div key={property.id} className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30">
+                      {property.images.length > 0 && (
+                        <div className="relative h-48">
+                          <Image
+                            src={property.images[0].url}
+                            alt={property.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-900 mb-2">{property.title}</h3>
+                        <p className="text-gray-600 text-sm mb-2 flex items-center">
+                          <FaMapMarkerAlt className="mr-1 text-gray-400" />
+                          {property.location}
+                        </p>
+                        <p className="text-blue-600 font-bold text-lg mb-4">
+                          Rs. {property.amount.toLocaleString()}/month
+                        </p>
+                        <button
+                          onClick={() => handleUnfavoriteProperty(property.id)}
+                          className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                        >
+                          Remove from Favorites
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-              <p className="text-gray-600 mb-4">You haven't added any properties to your favorites yet.</p>
-              <Link
-                href="/tenant/properties"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
-              >
-                Browse Properties
-              </Link>
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
               href="/tenant/properties"
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
             >
-              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4 group-hover:bg-blue-200 transition-colors duration-300">
+                <FaSearch className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Browse Properties</h3>
-              <p className="text-gray-600">
-                Find your perfect home or commercial space
-              </p>
+              <p className="text-gray-600 text-sm">Find your perfect home or commercial space</p>
             </Link>
 
             <Link
               href="/messages"
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
             >
-              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
+              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4 group-hover:bg-green-200 transition-colors duration-300">
+                <FaEnvelope className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Messages</h3>
-              <p className="text-gray-600">
-                Contact property owners and manage inquiries
-              </p>
+              <p className="text-gray-600 text-sm">Contact property owners and manage inquiries</p>
+            </Link>
+
+            <Link
+              href="/tenant/payment"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
+            >
+              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4 group-hover:bg-purple-200 transition-colors duration-300">
+                <FaDollarSign className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Payments</h3>
+              <p className="text-gray-600 text-sm">Manage rent payments and history</p>
             </Link>
 
             <Link
               href="/tenant/settings"
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/30 group"
             >
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+              <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mb-4 group-hover:bg-orange-200 transition-colors duration-300">
+                <FaCog className="w-6 h-6 text-orange-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Settings</h3>
-              <p className="text-gray-600">
-                Manage your account settings
-              </p>
+              <p className="text-gray-600 text-sm">Manage your account settings</p>
             </Link>
           </div>
         </div>
@@ -319,9 +380,20 @@ export default function TenantDashboard() {
 
       {/* Unrent Confirmation Modal */}
       {showUnrentConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Unrent</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-white/20">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Confirm Unrent</h3>
+              <button
+                onClick={() => {
+                  setShowUnrentConfirm(false);
+                  setPropertyToUnrent(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            </div>
             <p className="text-gray-600 mb-6">
               Are you sure you want to unrent this property? This action cannot be undone.
             </p>
@@ -331,13 +403,13 @@ export default function TenantDashboard() {
                   setShowUnrentConfirm(false);
                   setPropertyToUnrent(null);
                 }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer font-medium transition-colors duration-200"
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200 rounded-lg hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmUnrent}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg cursor-pointer hover:bg-red-700 transition-colors duration-200"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium shadow-lg hover:shadow-xl"
               >
                 Confirm Unrent
               </button>
@@ -347,4 +419,4 @@ export default function TenantDashboard() {
       )}
     </div>
   );
-} 
+}

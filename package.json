@@ -12,12 +12,16 @@
     "@auth/prisma-adapter": "^2.9.1",
     "@prisma/client": "^6.8.2",
     "bcryptjs": "^3.0.2",
+    "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
+    "nextjs-toast-notify": "^1.45.0",
+    "npm": "^11.4.2",
     "prisma": "^6.8.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

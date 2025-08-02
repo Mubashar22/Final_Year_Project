@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rental Management System",
+  title: "RMS | Property rentals, house, flat & more",
   description: "A rental property management system for Faisalabad",
 };
 
