@@ -91,7 +91,7 @@ export default function FavoritesPage() {
           <div className="text-center">Loading favorites...</div>
         ) : favorites.length === 0 ? (
           <div className="text-center text-gray-600">
-            <p className="mb-4">You haven't added any properties to your favorites yet.</p>
+            <p className="mb-4">You haven&apos;t added any properties to your favorites yet.</p>
             <button
               onClick={() => router.push('/tenant')}
               className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"

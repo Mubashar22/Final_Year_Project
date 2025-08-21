@@ -90,7 +90,7 @@ export default function OwnerLoginPage() {
         <p className="mt-2 text-center text-sm text-gray-600">
           {isLogin ? (
             <>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 onClick={() => setIsLogin(false)}
                 className="font-medium text-blue-600 hover:text-blue-500"

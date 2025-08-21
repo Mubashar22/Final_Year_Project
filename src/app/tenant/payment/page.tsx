@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+// import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
 interface Property {
@@ -13,12 +13,15 @@ interface Property {
   images: { id: string; url: string }[];
 }
 
-export default function PaymentPage() {
+import { Suspense } from 'react';
+
+function PaymentPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: status } = useSession();
+  // const { data: session, status } = useSession();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [selectedCardType, setSelectedCardType] = useState<'visa' | 'mastercard' | ''>('');
   const [paymentDetails, setPaymentDetails] = useState({
@@ -35,10 +38,12 @@ export default function PaymentPage() {
       router.push('/auth/signin');
     } else if (status === 'authenticated') {
       const propertyId = searchParams.get('propertyId');
+      console.log('PaymentPage propertyId:', propertyId);
       if (propertyId) {
         fetchPropertyDetails(propertyId);
       } else {
-        router.push('/tenant/properties');
+        setError('No property selected. Please go back and select a property.');
+        setLoading(false);
       }
     }
   }, [status, router, searchParams]);
@@ -46,13 +51,24 @@ export default function PaymentPage() {
   const fetchPropertyDetails = async (propertyId: string) => {
     try {
       const response = await fetch(`/api/properties/${propertyId}`);
-      if (!response.ok) throw new Error('Failed to fetch property details');
+      if (!response.ok) {
+        const errMsg = `Failed to fetch property details (status: ${response.status})`;
+        setError(errMsg);
+        console.error(errMsg);
+        setLoading(false);
+        return;
+      }
       const data = await response.json();
+      console.log('Fetched property data:', data);
+      if (!data || data.message === 'Property not found') {
+        setError('Property not found. Please go back and select another property.');
+        setLoading(false);
+        return;
+      }
       setProperty(data);
     } catch (error) {
       console.error('Error fetching property:', error);
-      alert('Failed to fetch property details');
-      router.push('/tenant/properties');
+      setError('Failed to fetch property details. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -163,11 +179,11 @@ export default function PaymentPage() {
     );
   }
 
-  if (!property) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Property not found</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">{error}</h1>
           <button
             onClick={() => router.push('/tenant/properties')}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -177,6 +193,10 @@ export default function PaymentPage() {
         </div>
       </div>
     );
+  }
+
+  if (!property) {
+    return null;
   }
 
   return (
@@ -406,4 +426,12 @@ export default function PaymentPage() {
       </div>
     </div>
   );
-} 
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xl">Loading payment page...</div>}>
+      <PaymentPageInner />
+    </Suspense>
+  );
+}

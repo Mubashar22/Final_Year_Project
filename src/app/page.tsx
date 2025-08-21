@@ -3,10 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { FaHome, FaUsers, FaChartLine, FaStar, FaBuilding, FaHandshake } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
-  const [scrollY, setScrollY] = useState(0);
+  // Removed unused scrollY state
   const [isVisible, setIsVisible] = useState({
     hero: false,
     cards: false,
@@ -17,42 +18,36 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    
     // Intersection Observer for scroll animations
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry with the highest intersection ratio
-        let mostVisible = entries.reduce((prev, current) => {
-          return (current.intersectionRatio > prev.intersectionRatio) ? current : prev;
-        });
+        const mostVisible = entries.reduce((prev, current) =>
+          (current.intersectionRatio > prev.intersectionRatio) ? current : prev
+        );
 
         if (mostVisible.isIntersecting && mostVisible.intersectionRatio > 0.3) {
           const target = mostVisible.target.getAttribute('data-section');
           if (target) {
             setIsVisible(prev => ({ ...prev, [target]: true }));
-            // Set active section for navbar highlighting
             setActiveSection(target);
           }
         }
       },
-      { 
+      {
         threshold: [0.1, 0.3, 0.5, 0.7],
         rootMargin: '-50px 0px -50px 0px'
       }
     );
 
-    // Observe sections
     const sections = document.querySelectorAll('[data-section]');
     sections.forEach(section => observer.observe(section));
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
     };
   }, []);
 
+  // Rest of your code remains unchanged...
   const handleRoleSelect = (role: 'owner' | 'tenant') => {
     if (role === 'owner') {
       router.push('/auth/owner-login');
@@ -62,12 +57,10 @@ export default function Home() {
   };
 
   const handleFloatingElementClick = (element: string) => {
-    // Create ripple effect
     const ripple = document.createElement('div');
     ripple.className = 'absolute inset-0 bg-white/30 rounded-full animate-ping';
-    
-    // Add some interactive feedback
-    switch(element) {
+
+    switch (element) {
       case 'blue':
         document.body.style.background = 'linear-gradient(45deg, #3b82f6, #1d4ed8)';
         setTimeout(() => document.body.style.background = '', 1000);
@@ -84,12 +77,11 @@ export default function Home() {
   };
 
   const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ 
+    document.getElementById(sectionId)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
-    
-    // Set active section based on section ID
+
     if (sectionId === 'hero') {
       setActiveSection('hero');
     } else if (sectionId === 'role-selection') {
@@ -132,7 +124,7 @@ export default function Home() {
         <div className="bg-white/70 backdrop-blur-2xl border border-white/30 shadow-2xl rounded-2xl px-6 py-3">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
+            <Link href={"/"} className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <FaBuilding color="white" size="1.25em" />
               </div>
@@ -142,7 +134,7 @@ export default function Home() {
                 </h1>
                 <p className="text-xs text-gray-500 -mt-1">Faisalabad</p>
               </div>
-            </div>
+            </Link>
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-6">
@@ -156,7 +148,7 @@ export default function Home() {
                 onClick={() => scrollToSection('role-selection')}
                 className={`text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 hover:scale-105 transform px-3 py-2 rounded-lg hover:bg-blue-50 cursor-pointer ${activeSection === 'cards' ? 'bg-blue-50 text-blue-600' : ''}`}
               >
-                Services
+                node
               </button>
               <button
                 onClick={() => scrollToSection('stats')}
@@ -260,22 +252,22 @@ export default function Home() {
       </nav>
 
       {/* Hero Section with Background Image */}
-      <div 
+      <div
         className="relative overflow-hidden min-h-screen pt-16"
         data-section="hero"
         id="hero"
       >
         {/* Background Image - Fixed */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
           style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80')`
           }}
         ></div>
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-purple-900/70 to-blue-900/80"></div>
-        
+
         {/* Pattern Overlay */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -296,7 +288,8 @@ export default function Home() {
                 </span>
               </h1>
               <p className="max-w-2xl mx-auto text-xl md:text-2xl text-blue-300 font-medium leading-relaxed animate-fade-in-up animation-delay-200">
-                Welcome to <span className="text-blue-500 font-semibold">Faisalabad's Premier</span> Rental Management Platform
+              
+                Welcome to <span className="text-blue-500 font-semibold">Faisalabad&apos;s Premier</span> Rental Management Platform
               </p>
               <p className="max-w-xl mx-auto text-lg text-blue-400 animate-fade-in-up animation-delay-400">
                 Connecting property owners and tenants with seamless, modern solutions
@@ -304,7 +297,7 @@ export default function Home() {
             </div>
 
             {/* Enhanced Scroll Indicator */}
-            <div 
+            <div
               className="mt-12 cursor-pointer hover:scale-110 transition-transform duration-300"
               onClick={() => scrollToSection('role-selection')}
               title="Scroll to explore"
@@ -317,17 +310,17 @@ export default function Home() {
 
           {/* Interactive Floating Elements - Positioned after content */}
           <div className="absolute inset-0 pointer-events-none">
-            <div 
+            <div
               className="absolute top-1/4 left-8 w-20 h-20 bg-blue-400/20 rounded-full opacity-40 animate-pulse cursor-pointer hover:scale-110 transition-transform duration-300 hover:bg-blue-400/40 pointer-events-auto"
               onClick={() => handleFloatingElementClick('blue')}
               title="Click to view Services"
             ></div>
-            <div 
+            <div
               className="absolute bottom-1/4 right-8 w-24 h-24 bg-blue-400/20 rounded-full opacity-40 animate-pulse delay-1000 cursor-pointer hover:scale-110 transition-transform duration-300 hover:bg-blue-400/40 pointer-events-auto"
               onClick={() => handleFloatingElementClick('purple')}
               title="Click to view Stats"
             ></div>
-            <div 
+            <div
               className="absolute top-1/3 right-16 w-16 h-16 bg-blue-400/20 rounded-full opacity-40 animate-pulse delay-500 cursor-pointer hover:scale-110 transition-transform duration-300 hover:bg-blue-400/40 pointer-events-auto"
               onClick={() => handleFloatingElementClick('teal')}
               title="Click to view Reviews"
@@ -337,8 +330,8 @@ export default function Home() {
       </div>
 
       {/* Role Selection Cards with Background */}
-      <div 
-        className="relative py-20" 
+      <div
+        className="relative py-20"
         data-section="cards"
         id="role-selection"
         style={{
@@ -350,14 +343,14 @@ export default function Home() {
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/95 backdrop-blur-sm"></div>
-        
+
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`text-center mb-16 transition-all duration-1000 ${isVisible.cards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
               Choose Your Journey
             </h2>
             <p className="text-lg text-blue-600 max-w-2xl mx-auto">
-              Whether you're a property owner or looking for your next home, we've got you covered
+              Whether you&apos;re a property owner or looking for your next home, we&apos;ve got you covered
             </p>
           </div>
 
@@ -370,7 +363,7 @@ export default function Home() {
                   <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center transform group-hover:rotate-6 transition-transform duration-300 shadow-lg">
                     <FaBuilding color="white" size="2em" />
                   </div>
-                  
+
                   <div>
                     <h3 className="text-2xl md:text-3xl font-bold text-blue-900 mb-3">
                       Property Owner
@@ -413,7 +406,7 @@ export default function Home() {
                   <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center transform group-hover:rotate-6 transition-transform duration-300 shadow-lg">
                     <FaHome color="white" size="2em" />
                   </div>
-                  
+
                   <div>
                     <h3 className="text-2xl md:text-3xl font-bold text-blue-900 mb-3">
                       Tenant
@@ -452,8 +445,8 @@ export default function Home() {
       </div>
 
       {/* Stats Section with Background */}
-      <div 
-        className="relative py-20" 
+      <div
+        className="relative py-20"
         data-section="stats"
         id="stats"
         style={{
@@ -464,7 +457,7 @@ export default function Home() {
       >
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-purple-900/90"></div>
-        
+
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`text-center mb-12 transition-all duration-1000 ${isVisible.stats ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -474,10 +467,10 @@ export default function Home() {
               Join our growing community of satisfied users
             </p>
           </div>
-          
+
           <div className={`grid grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-1000 ${isVisible.stats ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             {stats.map((stat, index) => (
-              <div key={index} className={`text-center group animate-fade-in-up`} style={{animationDelay: `${index * 200}ms`}}>
+              <div key={index} className={`text-center group animate-fade-in-up`} style={{ animationDelay: `${index * 200}ms` }}>
                 <div className="mx-auto w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-blue-200/20">
                   <stat.icon color="white" size="2em" />
                 </div>
@@ -490,8 +483,8 @@ export default function Home() {
       </div>
 
       {/* Testimonials with Background */}
-      <div 
-        className="relative py-20" 
+      <div
+        className="relative py-20"
         data-section="testimonials"
         id="testimonials"
         style={{
@@ -502,7 +495,7 @@ export default function Home() {
       >
         {/* Light Overlay */}
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm"></div>
-        
+
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`text-center mb-12 transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
@@ -512,15 +505,15 @@ export default function Home() {
               Real experiences from real people
             </p>
           </div>
-          
+
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             {testimonials.map((testimonial, index) => (
-              <div key={index} className={`bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-blue-200/50 animate-slide-in-up`} style={{animationDelay: `${index * 300}ms`}}>
+              <div key={index} className={`bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-blue-200/50 animate-slide-in-up`} style={{ animationDelay: `${index * 300}ms` }}>
                 {/* User Profile Section */}
                 <div className="flex items-start mb-6">
                   <div className="relative flex-shrink-0">
-                    <img 
-                      src={testimonial.avatar} 
+                    <img
+                      src={testimonial.avatar}
                       alt={testimonial.name}
                       onError={(e) => {
                         e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=3b82f6&color=fff&size=64`;
@@ -539,20 +532,20 @@ export default function Home() {
                     {/* Star Rating */}
                     <div className="flex items-center">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <FaStar key={i} color="#facc15" size="1em"/>
+                        <FaStar key={i} color="#facc15" size="1em" />
                       ))}
                       <span className="text-blue-500 text-sm ml-2">({testimonial.rating}.0)</span>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Testimonial Text */}
                 <div className="relative">
-                  <div className="absolute -top-2 -left-2 text-4xl text-blue-300 opacity-30 font-serif leading-none">"</div>
+                  <div className="absolute -top-2 -left-2 text-4xl text-blue-300 opacity-30 font-serif leading-none">&quot;</div>
                   <p className="text-blue-700 leading-relaxed text-base italic pl-6 pr-6">
-                    {testimonial.text}
+                    {testimonial.text.replace(/"/g, "&quot;")}
                   </p>
-                  <div className="absolute -bottom-2 -right-2 text-4xl text-blue-300 opacity-30 font-serif leading-none rotate-180">"</div>
+                  <div className="absolute -bottom-2 -right-2 text-4xl text-blue-300 opacity-30 font-serif leading-none rotate-180">&quot;</div>
                 </div>
               </div>
             ))}
@@ -568,11 +561,11 @@ export default function Home() {
       }}>
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/95 to-purple-900/95"></div>
-        
+
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h3 className="text-3xl font-bold mb-4 text-white">Rental Management System</h3>
           <p className="text-blue-400 mb-6 text-lg">
-            Faisalabad's most trusted platform for rental management
+            Faisalabad&apos;s most trusted platform for rental management
           </p>
           <div className="text-blue-500 text-sm">
             2024 Rental Management System. All rights reserved.

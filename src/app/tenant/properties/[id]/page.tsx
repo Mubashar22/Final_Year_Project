@@ -1,9 +1,11 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import { FaHome, FaArrowLeft, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaRupeeSign, FaUser, FaEnvelope, FaCalendarAlt, FaCheckCircle } from 'react-icons/fa';
+import ImageCarousel from '@/app/components/ImageCarousel';
 
 interface Property {
   id: string;
@@ -24,9 +26,9 @@ interface Property {
   };
 }
 
-export default function PropertyDetails({ params }: { params: { id: string } }) {
+export default function PropertyDetails({ params }: any) {
   const router = useRouter();
-  const { data: status } = useSession();
+  const { status } = useSession();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,16 +98,10 @@ export default function PropertyDetails({ params }: { params: { id: string } }) 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded-lg w-1/4"></div>
-            <div className="h-96 bg-gray-200 rounded-lg"></div>
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading property details...</p>
         </div>
       </div>
     );
@@ -113,13 +109,15 @@ export default function PropertyDetails({ params }: { params: { id: string } }) 
 
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-            <p className="text-red-600 mb-4">{error || 'Property not found'}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 p-12 max-w-md mx-auto">
+            <span style={{ fontSize: '3.75rem', color: '#9ca3af', display: 'block', margin: '0 auto 1rem auto' }}><FaHome size={96} /></span>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h3>
+            <p className="text-red-600 mb-6">{error || 'Property not found'}</p>
             <button
               onClick={() => router.back()}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-2xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
             >
               Go Back
             </button>
@@ -130,155 +128,241 @@ export default function PropertyDetails({ params }: { params: { id: string } }) 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Property Images */}
-          <div className="relative">
-            {/* Main Image */}
-            <div className="relative h-96 w-full">
-              {property.images[0] && (
-                <Image
-                  src={property.images[0].url}
-                  alt={property.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1280px) 100vw, 1280px"
-                  priority
-                />
-              )}
-            </div>
-            
-            {/* Image Thumbnails */}
-            {property.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50">
-                {property.images.map((image, index) => (
-                  <div
-                    key={image.id}
-                    className="relative h-24 w-full cursor-pointer hover:opacity-75 transition-opacity"
-                    onClick={() => {
-                      // Move this image to the first position
-                      const newImages = [...property.images];
-                      const [movedImage] = newImages.splice(index, 1);
-                      newImages.unshift(movedImage);
-                      setProperty({ ...property, images: newImages });
-                    }}
-                  >
-                    <Image
-                      src={image.url}
-                      alt={`${property.title} - Image ${index + 1}`}
-                      fill
-                      className="object-cover rounded-lg"
-                      sizes="(max-width: 768px) 25vw, 20vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Property Details */}
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
-                <p className="text-gray-600">{property.location}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-blue-600">
-                  Rs. {property.amount.toLocaleString()}/month
-                </p>
-                {property.isAvailable ? (
-                  <button
-                    onClick={() => setShowRentModal(true)}
-                    className="mt-4 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer shadow-md"
-                  >
-                    Rent Now
-                  </button>
-                ) : (
-                  <span className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-500">
-                    Not Available
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-600">Bedrooms</p>
-                <p className="text-xl font-semibold text-gray-900">{property.bedrooms}</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-600">Bathrooms</p>
-                <p className="text-xl font-semibold text-gray-900">{property.bathrooms}</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-600">Area</p>
-                <p className="text-xl font-semibold text-gray-900">{property.area} sq ft</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-600">Type</p>
-                <p className="text-xl font-semibold text-gray-900">{property.type}</p>
-              </div>
-            </div>
-
-            <div className="prose max-w-none">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Description</h2>
-              <p className="text-gray-600">{property.description}</p>
-            </div>
-
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Owner Information</h2>
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-gray-900 font-medium">{property.owner.name}</p>
-                <p className="text-gray-600">{property.owner.email}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80')`
+        }}
+      />
+      
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-purple-900/15 to-indigo-900/20 backdrop-blur-sm" />
+      
+      {/* Floating Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-400/20 rounded-full opacity-40 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-purple-400/20 rounded-full opacity-40 animate-pulse delay-1000" />
+        <div className="absolute top-1/3 right-20 w-16 h-16 bg-teal-400/20 rounded-full opacity-40 animate-pulse delay-500" />
+        <div className="absolute bottom-1/3 left-20 w-18 h-18 bg-indigo-400/20 rounded-full opacity-40 animate-pulse delay-700" />
       </div>
 
-      {/* Rent Modal */}
-      {showRentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Rent Property</h3>
-            <div className="mb-4">
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-                Start Date
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => {
-                  setShowRentModal(false);
-                  setStartDate('');
-                }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200"
-                disabled={renting}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRentProperty}
-                disabled={renting}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {renting ? 'Renting...' : 'Confirm Rent'}
-              </button>
+      {/* Main Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="bg-white/90 backdrop-blur-md shadow-lg border-b border-white/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={() => router.back()}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors duration-300 bg-white/50 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/70"
+                >
+                  <span style={{ fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center' }}><FaArrowLeft size={14} /></span>
+                  <span className="text-sm font-medium">Back</span>
+                </button>
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span style={{ color: 'white', fontSize: '1.25rem', display: 'inline-flex', alignItems: 'center' }}><FaHome size={20} /></span>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Property Details
+                    </h1>
+                    <p className="text-gray-600 text-sm">Complete property information</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Property Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Property Info */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Property Images */}
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+                <div className="relative">
+                  <ImageCarousel 
+                    images={property.images || []}
+                    title={property.title}
+                    height="h-96"
+                  />
+                  <div className={`absolute top-4 left-4 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm ${
+                    property.isAvailable 
+                      ? 'bg-green-500/90 text-white' 
+                      : 'bg-red-500/90 text-white'
+                  }`}>
+                    {property.isAvailable ? 'Available' : 'Not Available'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 p-8">
+                <div className="mb-6">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">{property.title}</h2>
+                  <div className="flex items-center text-gray-600 mb-4">
+                    <span style={{ color: '#3b82f6', fontSize: '1rem', marginRight: '0.5rem', display: 'inline-flex', alignItems: 'center' }}><FaMapMarkerAlt size={16} /></span>
+                    <span className="text-lg">{property.location}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span style={{ color: '#16a34a', fontSize: '2rem', marginRight: '0.5rem', display: 'inline-flex', alignItems: 'center' }}><FaRupeeSign size={32} /></span>
+                    <span className="text-4xl font-bold text-gray-900">
+                      {property.amount.toLocaleString()}
+                    </span>
+                    <span className="text-gray-500 text-lg ml-2">/month</span>
+                  </div>
+                </div>
+
+                {/* Property Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl text-center">
+                    <span style={{ color: '#2563eb', fontSize: '2rem', display: 'block', margin: '0 auto 0.5rem auto' }}><FaBed size={32} /></span>
+                    <p className="text-sm text-gray-600 mb-1">Bedrooms</p>
+                    <p className="text-2xl font-bold text-gray-900">{property.bedrooms || 2}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl text-center">
+                    <span style={{ color: '#16a34a', fontSize: '2rem', display: 'block', margin: '0 auto 0.5rem auto' }}><FaBath size={32} /></span>
+                    <p className="text-sm text-gray-600 mb-1">Bathrooms</p>
+                    <p className="text-2xl font-bold text-gray-900">{property.bathrooms || 1}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl text-center">
+                    <span style={{ color: '#7c3aed', fontSize: '2rem', display: 'block', margin: '0 auto 0.5rem auto' }}><FaRulerCombined size={32} /></span>
+                    <p className="text-sm text-gray-600 mb-1">Area</p>
+                    <p className="text-2xl font-bold text-gray-900">{property.area}</p>
+                    <p className="text-xs text-gray-500">sq ft</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-2xl text-center">
+                    <span style={{ color: '#ea580c', fontSize: '2rem', display: 'block', margin: '0 auto 0.5rem auto' }}><FaHome size={32} /></span>
+                    <p className="text-sm text-gray-600 mb-1">Type</p>
+                    <p className="text-lg font-bold text-gray-900">{property.type}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Description</h3>
+                  <p className="text-gray-600 text-lg leading-relaxed">{property.description}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-8">
+              {/* Owner Information */}
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 p-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <span style={{ color: '#2563eb', fontSize: '1rem', marginRight: '0.75rem', display: 'inline-flex', alignItems: 'center' }}><FaUser size={16} /></span>
+                  Owner Information
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span style={{ color: 'white', fontSize: '1rem', display: 'inline-flex', alignItems: 'center' }}><FaUser size={16} /></span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{property.owner?.name || 'Property Owner'}</p>
+                      <p className="text-gray-600 text-sm">Property Owner</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-blue-50/50 rounded-2xl p-3">
+                    <span style={{ color: '#2563eb', fontSize: '1rem', display: 'inline-flex', alignItems: 'center' }}><FaEnvelope size={16} /></span>
+                    <span className="text-gray-700">{property.owner?.email || 'Contact via platform'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rent Action */}
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 p-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Ready to Rent?</h3>
+                
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-700 font-medium">Monthly Rent:</span>
+                      <span className="text-2xl font-bold text-green-600">
+                        PKR {property.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {property.isAvailable ? (
+                    <button
+                      onClick={() => setShowRentModal(true)}
+                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                    >
+                      <span style={{ fontSize: '1.25rem', display: 'inline-flex', alignItems: 'center' }}><FaCheckCircle size={20} /></span>
+                      <span>Rent Now</span>
+                    </button>
+                  ) : (
+                    <div className="w-full bg-gray-300 text-gray-600 py-4 px-6 rounded-2xl font-bold text-lg text-center">
+                      Not Available
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Rent Modal */}
+        {showRentModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md w-full transform animate-in zoom-in-95 duration-300">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <FaCalendarAlt color="white" size="2rem" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Rent Property
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Select your preferred start date for <span className="font-semibold text-blue-600">{property.title}</span>
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="startDate" className="block text-sm font-semibold text-gray-700 mb-3">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowRentModal(false);
+                    setStartDate('');
+                  }}
+                  className="flex-1 px-6 py-3 text-gray-700 bg-gray-100 rounded-2xl font-semibold hover:bg-gray-200 transition-all duration-300"
+                  disabled={renting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRentProperty}
+                  disabled={renting}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {renting ? 'Processing...' : 'Confirm Rent'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
-} 
+}

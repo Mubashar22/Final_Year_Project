@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '../../auth/authOptions';
 import { prisma } from '@/lib/prisma';
 
 // PATCH (update) message
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,7 +19,7 @@ export async function PATCH(
     }
 
     const message = await prisma.message.findUnique({
-      where: { id: params.id },
+      where: { id: context.params.id },
     });
 
     if (!message) {
@@ -47,18 +48,10 @@ export async function PATCH(
     }
 
     const updatedMessage = await prisma.message.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: { content },
       include: {
         sender: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phoneNumber: true,
-          },
-        },
-        receiver: {
           select: {
             id: true,
             name: true,
@@ -75,7 +68,6 @@ export async function PATCH(
         },
       },
     });
-
     return NextResponse.json(updatedMessage);
   } catch (error) {
     console.error('Error updating message:', error);
@@ -89,7 +81,7 @@ export async function PATCH(
 // DELETE message
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -101,7 +93,7 @@ export async function DELETE(
     }
 
     const message = await prisma.message.findUnique({
-      where: { id: params.id },
+      where: { id: context.params.id },
     });
 
     if (!message) {
@@ -120,7 +112,7 @@ export async function DELETE(
     }
 
     await prisma.message.delete({
-      where: { id: params.id },
+      where: { id: context.params.id },
     });
 
     return NextResponse.json({ message: 'Message deleted successfully' });

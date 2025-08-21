@@ -22,7 +22,9 @@ interface Property {
   isFavorite?: boolean;
 }
 
-export default function TenantPage() {
+import { Suspense } from 'react';
+
+function TenantPageInner() {
   const router = useRouter();
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -56,10 +58,11 @@ export default function TenantPage() {
           // Fetch user's favorites
           const favoritesResponse = await fetch('/api/favorites');
           const favorites = await favoritesResponse.json();
-          const favoriteIds = new Set(favorites.map((f: any) => f.property.id));
+          type Favorite = { property: { id: string } };
+          const favoriteIds = new Set((favorites as Favorite[]).map((f) => f.property.id));
 
           // Mark properties as favorite
-          data.forEach((property: Property) => {
+          (data as Property[]).forEach((property) => {
             property.isFavorite = favoriteIds.has(property.id);
           });
         }
@@ -128,8 +131,9 @@ export default function TenantPage() {
 
       if (property.isFavorite) {
         // Remove from favorites
+        type Favorite = { id: string; property: { id: string } };
         const favorite = await fetch('/api/favorites').then(res => res.json())
-          .then(favorites => favorites.find((f: any) => f.property.id === propertyId));
+          .then((favorites: Favorite[]) => favorites.find((f) => f.property.id === propertyId));
 
         if (favorite) {
           await fetch(`/api/favorites/${favorite.id}`, {
@@ -408,4 +412,12 @@ export default function TenantPage() {
       )}
     </div>
   );
-} 
+}
+
+export default function TenantPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xl">Loading tenant dashboard...</div>}>
+      <TenantPageInner />
+    </Suspense>
+  );
+}

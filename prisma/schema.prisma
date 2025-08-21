@@ -22,6 +22,7 @@ model User {
   receivedMessages Message[] @relation("ReceivedMessages")
   rentals       Rental[]  @relation("TenantRentals")
   payments      Payment[]
+  notifications Notification[]
 }
 
 model Property {

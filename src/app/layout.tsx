@@ -1,34 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Providers from "./providers";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Providers from './providers';
+import Chatbot from './components/Chatbot';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({ 
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter"
 });
 
 export const metadata: Metadata = {
-  title: "RMS | Property rentals, house, flat & more",
-  description: "A rental property management system for Faisalabad",
+  title: "RMS | Property rentals, house, flats & much more",
+  description: "Modern rental management platform for Faisalabad",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>{children}</Providers>
+      <body className={`${inter.variable} antialiased`}>
+        <Providers>
+          {children}
+          <Chatbot />
+        </Providers>
       </body>
     </html>
   );

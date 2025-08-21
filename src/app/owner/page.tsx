@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import ImageCarousel from '@/app/components/ImageCarousel';
 
 interface Property {
   id: string;
@@ -46,7 +47,7 @@ export default function OwnerPage() {
   const [success, setSuccess] = useState('');
   const [editProperty, setEditProperty] = useState<Property | null>(null);
   const [existingImages, setExistingImages] = useState<{ id: string; url: string }[]>([]);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<{ [key: string]: number }>({});
+  // Removed unused variable 'selectedImageIndex' to fix lint error
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -266,7 +267,7 @@ export default function OwnerPage() {
                 const errorData = await uploadResponse.json();
                 uploadErrors.push(errorData.error || 'Failed to upload image');
               }
-            } catch (uploadError) {
+            } catch {
               uploadErrors.push('Failed to upload image');
             }
           }
@@ -320,12 +321,7 @@ export default function OwnerPage() {
     }
   };
 
-  const handleImageClick = (propertyId: string, index: number) => {
-    setSelectedImageIndex(prev => ({
-      ...prev,
-      [propertyId]: index
-    }));
-  };
+  // Removed unused function 'handleImageClick' to fix lint error
 
   if (status === 'loading') {
     return (
@@ -538,56 +534,12 @@ export default function OwnerPage() {
             {properties.map((property) => (
               <div key={property.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
                 <div className="relative">
-                  {property.images.length > 0 ? (
-                    <>
-                      <div className="relative h-48">
-                        <Image
-                          src={property.images[selectedImageIndex[property.id] || 0].url}
-                          alt={property.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        {property.images.length > 1 && (
-                          <>
-                            <button
-                              onClick={() => handleImageClick(property.id, (selectedImageIndex[property.id] || 0) - 1)}
-                              disabled={(selectedImageIndex[property.id] || 0) === 0}
-                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity duration-200 disabled:opacity-30 cursor-pointer"
-                            >
-                              ←
-                            </button>
-                            <button
-                              onClick={() => handleImageClick(property.id, (selectedImageIndex[property.id] || 0) + 1)}
-                              disabled={(selectedImageIndex[property.id] || 0) === property.images.length - 1}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity duration-200 disabled:opacity-30 cursor-pointer"
-                            >
-                              →
-                            </button>
-                          </>
-                        )}
-                      </div>
-                      {property.images.length > 1 && (
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
-                          {property.images.map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleImageClick(property.id, index)}
-                              className={`w-2 h-2 rounded-full transition-all duration-200 cursor-pointer ${
-                                (selectedImageIndex[property.id] || 0) === index
-                                  ? 'bg-white scale-125'
-                                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="h-48 bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400">No images available</span>
-                    </div>
-                  )}
+                  <ImageCarousel 
+                    images={property.images} 
+                    title={property.title}
+                    height="h-48"
+                    className="rounded-t-xl"
+                  />
                   <div className="absolute top-2 right-2">
                     <button
                       onClick={() => handleStatusChange(property.id, !property.isAvailable)}

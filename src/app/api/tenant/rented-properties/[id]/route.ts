@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { authOptions } from '../../../auth/authOptions';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,7 +19,7 @@ export async function DELETE(
       );
     }
 
-    const propertyId = params.id;
+  const propertyId = context.params.id;
     console.log('Attempting to unrent property:', { propertyId, userId: session.user.id });
 
     // Find the active rental for this property and user

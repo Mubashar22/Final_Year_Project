@@ -76,7 +76,7 @@ export default function OwnerLogin() {
           href="/"
           className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-300 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/20"
         >
-          <FaArrowLeft className="text-sm" />
+          <span style={{ fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center' }}><FaArrowLeft size={14} /></span>
           <span className="text-sm font-medium">Back to Home</span>
         </Link>
       </div>
@@ -88,7 +88,7 @@ export default function OwnerLogin() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                <FaBuilding className="text-white text-2xl" />
+                <span style={{ color: 'white', fontSize: '2rem', display: 'inline-flex', alignItems: 'center' }}><FaBuilding size={32} /></span>
               </div>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">
@@ -146,7 +146,7 @@ export default function OwnerLogin() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                   >
-                    {showPassword ? <FaEyeSlash className="w-5 h-5" /> : <FaEye className="w-5 h-5" />}
+                    {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
                   </button>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function OwnerLogin() {
                   href="/auth/register" 
                   className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:underline"
                 >
-                  Don't have an account? Register as Owner
+                  Don&apos;t have an account? Register as Owner
                 </Link>
               </div>
             </form>

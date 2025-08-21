@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { authOptions } from '../../../auth/authOptions';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@/lib/prisma';
 
 // GET single property
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+    context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,9 +15,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: params.id },
-      include: {
+      const property = await prisma.property.findUnique({
+        where: { id: context.params.id },
+        include: {
         images: {
           select: {
             id: true,
@@ -43,7 +44,7 @@ export async function GET(
 // PATCH (update) property
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+    context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -51,9 +52,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: params.id },
-    });
+      const property = await prisma.property.findUnique({
+        where: { id: context.params.id },
+      });
 
     if (!property || property.ownerId !== session.user.id) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
@@ -62,8 +63,8 @@ export async function PATCH(
     const data = await request.json();
     const { title, description, type, area, amount, location } = data;
 
-    const updatedProperty = await prisma.property.update({
-      where: { id: params.id },
+      const updatedProperty = await prisma.property.update({
+        where: { id: context.params.id },
       data: {
         title,
         description,
@@ -95,7 +96,7 @@ export async function PATCH(
 // DELETE property
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,7 +105,7 @@ export async function DELETE(
     }
 
     const property = await prisma.property.findUnique({
-      where: { id: params.id },
+      where: { id: context.params.id },
       include: {
         rentals: {
           where: {
@@ -130,31 +131,31 @@ export async function DELETE(
     await prisma.$transaction([
       // Delete images
       prisma.image.deleteMany({
-        where: { propertyId: params.id },
+        where: { propertyId: context.params.id },
       }),
       // Delete favorites
       prisma.favorite.deleteMany({
-        where: { propertyId: params.id },
+        where: { propertyId: context.params.id },
       }),
       // Delete messages
       prisma.message.deleteMany({
-        where: { propertyId: params.id },
+        where: { propertyId: context.params.id },
       }),
       // Delete payments
       prisma.payment.deleteMany({
-        where: { propertyId: params.id },
+        where: { propertyId: context.params.id },
       }),
       // Delete rentals
       prisma.rental.deleteMany({
-        where: { propertyId: params.id },
+        where: { propertyId: context.params.id },
       }),
       // Finally delete the property
       prisma.property.delete({
-        where: { id: params.id },
+        where: { id: context.params.id },
       }),
     ]);
 
-    return NextResponse.json({ message: 'Property deleted successfully' });
+  return NextResponse.json({ message: 'Property deleted successfully' });
   } catch (error) {
     console.error('Error deleting property:', error);
     return NextResponse.json(
